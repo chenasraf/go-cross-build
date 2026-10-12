@@ -41,6 +41,9 @@ The `platforms` option specifies comma-separated platform names to create binary
 #### ☉ option: **package**
 If the module (_repository_) itself is a Go package, then `package` option value should be an empty string (''). If the repository contains a package directory, then `package` value should be the directory name.
 
+#### ☉ option: **working-directory**
+The `working-directory` option sets the directory containing the Go module, for repositories where the module is not at the root (e.g. `'backend'`). The `package` option is resolved relative to it, while `dest` stays relative to the repository root. By default, the repository root is used.
+
 #### ☉ option: **compress**
 The `compress` option if set to `'true'` will generate **compressed-tar** archive files for the each platform-build file. The resulting archive file also contains `README.md` and `LICENSE` file if they exist inside the root of the repository. In this mode, the binary executable file name is taken from the `name` option value.
 

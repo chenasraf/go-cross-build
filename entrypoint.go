@@ -39,7 +39,7 @@ func copyFile(src, dest string) {
 /*************************************/
 
 // build the package for a platform
-func build(packageName, destDir string, platform map[string]string, ldflags string, compress bool) {
+func build(packageName, destDir, workingDir string, platform map[string]string, ldflags string, compress bool) {
 
 	// platform config
 	platformKernel := platform["kernel"]
@@ -99,6 +99,9 @@ func build(packageName, destDir string, platform map[string]string, ldflags stri
 
 	// generate `go build` command
 	buildCmd := exec.Command("go", buildOptions...)
+
+	// run inside the module directory (`dest` stays relative to the workspace)
+	buildCmd.Dir = filepath.Join(workspaceDir, workingDir)
 
 	// set environment variables
 	buildCmd.Env = append(os.Environ(), []string{
@@ -187,12 +190,16 @@ func main() {
 	inputCompress := os.Getenv("INPUT_COMPRESS")
 	inputDest := os.Getenv("INPUT_DEST")
 	inputLdflags := os.Getenv("INPUT_LDFLAGS")
+	inputWorkingDir := os.Getenv("INPUT_WORKING-DIRECTORY")
 
 	// package name to build
 	packageName := strings.ReplaceAll(inputPackage, " ", "")
 
 	// destination directory
 	destDir := strings.ReplaceAll(inputDest, " ", "")
+
+	// module directory
+	workingDir := strings.TrimSpace(inputWorkingDir)
 
 	// split platform names by comma (`,`)
 	platforms := strings.Split(inputPlatforms, ",")
@@ -216,7 +223,7 @@ func main() {
 		}
 
 		// execute `build` function
-		build(packageName, destDir, platformMap, inputLdflags, compress)
+		build(packageName, destDir, workingDir, platformMap, inputLdflags, compress)
 	}
 
 	/*------------*/
